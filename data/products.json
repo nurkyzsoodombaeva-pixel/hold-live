@@ -1,0 +1,81 @@
+[
+  {
+    "id": 1,
+    "title": "Anua Heartleaf 77%",
+    "category": "Уход за лицом",
+    "subCategory": "Тонеры",
+    "price": 1800,
+    "description": "Успокаивающий тонер для чувствительной кожи",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPlvij0yrM-p6cHcOp3pWXJCFuQ939DSYi09j1CqfJnQ&s=10"
+  },
+
+  {
+    "id": 2,
+    "title": "Skin1004 Ampoule",
+    "category": "Уход за лицом",
+    "subCategory": "Ампула",
+    "price": 2200,
+    "description": "Ампула с центеллой для восстановления кожи",
+    "image": "https://www.skin1004.com/cdn/shop/products/skin1004-ampoule-serum-centella-ampoule-38642800132342.png?v=1677148695"
+  },
+
+  {
+    "id": 3,
+    "title": "Beauty of Joseon",
+    "category": "Уход за лицом",
+    "subCategory": "SPF",
+    "price": 1500,
+    "description": "Легкий SPF крем без белых следов",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDeKh6XRIYupjqGdu9Oj7znpa5YdaIXj9xM-h1u-ViSw&s=10"
+  },
+
+  {
+    "id": 4,
+    "title": "Round Lab Dokdo",
+    "category": "Уход за лицом",
+    "subCategory": "Тонеры",
+    "price": 1900,
+    "description": "Увлажняющий тонер с морской водой",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0IzfzLMc1jLQiTvT7tAgPo-MQZkbXlJT8mMyinQsBEA&s=10"
+  },
+
+  {
+    "id": 5,
+    "title": "COSRX Snail Mucin",
+    "category": "Уход за лицом",
+    "subCategory": "Эсенция",
+    "price": 2100,
+    "description": "Восстанавливающая эссенция с муцином улитки",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRmscsW9eoQdtjj_7DFZcSEKSNMvIlGJTl0eN8vydGUA&s=10"
+  },
+
+  {
+    "id": 6,
+    "title": "Torriden Dive In",
+    "category": "Уход за лицом",
+    "subCategory": "Сыворотки",
+    "price": 2400,
+    "description": "Глубокое увлажнение гиалуроновой кислотой",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbV2zSl-WhDt6lPdnIxpONRKbZ5oaY0OlDUEDdMinzig&s=10"
+  },
+
+  {
+    "id": 7,
+    "title": "Anua Cleansing Oil",
+    "category": "Уход за лицом",
+    "subCategory": "Гидрофилка",
+    "price": 2000,
+    "description": "Гидрофильное масло для снятия макияжа",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_SLOrnfXbKB1xeb3CaG5joFGGCX5iBQ6tINaeUh6ycw&s=10"
+  },
+
+  {
+    "id": 8,
+    "title": "Beauty Serum",
+    "category": "Уход за лицом",
+    "subCategory": "Сыворотки",
+    "price": 1700,
+    "description": "Питательная сыворотка для сияния кожи",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMkhCrsH0Ohllnuilz3iP0W8lzXbFN3YcFeGPORXhe1A&s=10"
+  }
+]

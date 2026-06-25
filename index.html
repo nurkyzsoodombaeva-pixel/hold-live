@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hold Live</title>
+
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="blur blur-1"></div>
+    <div class="blur blur-2"></div>
+
+    <header class="header">
+      <div class="container">
+        <div class="logo">Hold Live</div>
+
+        <nav class="nav">
+          <a href="#home">Главная</a>
+          <a href="#categories">Категории</a>
+          <a href="#products">Товары</a>
+          <a href="#reviews">Отзывы</a>
+          <a href="#contacts">Контакты</a>
+        </nav>
+
+        <div class="header-icons">
+          <button class="icon-btn">✨</button>
+          <button class="icon-btn">🔥</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero" id="home">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <span class="hero-label"> PREMIUM KOREAN SKINCARE </span>
+
+          <h1>
+            Hold<br />
+            Live
+          </h1>
+
+          <p>Оригинальная корейская косметика для здоровой и сияющей кожи</p>
+
+          <div class="hero-buttons">
+            <button class="main-btn">Смотреть каталог</button>
+
+            <button class="secondary-btn">Подробнее</button>
+          </div>
+        </div>
+
+        <div class="hero-image">
+          <img src="./images/products/anua.jpg" alt="" />
+        </div>
+      </div>
+    </section>
+
+    <section class="categories" id="categories">
+      <div class="container">
+        <h2>Категории</h2>
+
+        <div class="categories-grid">
+          <div class="category-card" data-category="face">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNrJqRZdSr21TErDy6haigB5cMkv8sHg4QhIfRwgXs4cIjdwrwsbvWPL6D&s=10"
+            />
+            <div class="category-overlay">
+              <h3>Уход за лицом</h3>
+            </div>
+          </div>
+
+          <div class="category-card" data-category="body">
+            <img
+              src="https://blog.eva.ua/wp-content/uploads/2025/08/0-korejskyj-doglyad-za-tilom.jpg"
+            />
+            <div class="category-overlay">
+              <h3>Уход за телом</h3>
+            </div>
+          </div>
+
+          <div class="category-card" data-category="hair">
+            <img
+              src="https://i.pinimg.com/236x/a0/59/f9/a059f91a59f8a41fd68e0c045c3bc892.jpg"
+            />
+            <div class="category-overlay">
+              <h3>Волосы</h3>
+            </div>
+          </div>
+
+          <div class="category-card" data-category="makeup">
+            <img
+              src="https://i.pinimg.com/1200x/94/5a/5e/945a5e9a8ad2a389c75f309ba2c5c481.jpg"
+            />
+            <div class="category-overlay">
+              <h3>Макияж</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="subcategories"></div>
+      </div>
+    </section>
+
+    <section class="products-section" id="products">
+      <div class="container">
+        <div class="section-top">
+          <h2>Популярные товары</h2>
+
+          <input type="text" class="search" placeholder="Поиск товара..." />
+        </div>
+
+        <div class="products"></div>
+      </div>
+    </section>
+
+    <section class="benefits">
+      <div class="container">
+        <div class="benefit-card">
+          <h3>100%</h3>
+          <p>Оригинальная продукция</p>
+        </div>
+
+        <div class="benefit-card">
+          <h3>24/7</h3>
+          <p>Поддержка клиентов</p>
+        </div>
+
+        <div class="benefit-card">
+          <h3>1-2 дня</h3>
+          <p>Быстрая доставка</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reviews" id="reviews">
+      <div class="container">
+        <h2>Отзывы клиентов</h2>
+
+        <div class="reviews-grid">
+          <div class="review-card">
+            ⭐⭐⭐⭐⭐
+            <p>Лучшая косметика, которую я покупала.</p>
+          </div>
+
+          <div class="review-card">
+            ⭐⭐⭐⭐⭐
+            <p>Очень быстрая доставка.</p>
+          </div>
+
+          <div class="review-card">
+            ⭐⭐⭐⭐⭐
+            <p>Оригинальные товары и приятные цены.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer" id="contacts">
+      <div class="container">
+        <h2>Hold Live</h2>
+
+        <p>© 2026 Premium Beauty Store</p>
+      </div>
+    </footer>
+
+    <div class="modal">
+      <div class="modal-content">
+        <button class="close-modal">✖</button>
+
+        <h2>Добавить товар</h2>
+
+        <input id="title" placeholder="Название" />
+        <input id="desc" placeholder="Описание" />
+        <input id="price" placeholder="Цена" />
+        <input id="image" placeholder="Картинка (URL)" />
+
+        <select id="category">
+          <option value="face">Лицо</option>
+          <option value="body">Тело</option>
+          <option value="hair">Волосы</option>
+          <option value="makeup">Макияж</option>
+        </select>
+
+        <input id="subCategory" placeholder="Подкатегория" />
+
+        <button id="addBtn">Добавить</button>
+      </div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>

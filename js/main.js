@@ -1,45 +1,47 @@
-import { fetchProducts, saveProduct } from "./firebase.js";
+import {
+  fetchProducts,
+  saveProduct,
+  deleteFromFirebase,
+  updateProduct,
+} from "./firebase.js";
+
+/* ================= ADMIN ================= */
+
+const ADMIN_PASSWORD = "1234";
+
+function isAdmin() {
+  return localStorage.getItem("isAdmin") === "true";
+}
+
+function initAdmin() {
+  const box = document.querySelector(".admin-login");
+  const btn = document.querySelector("#loginBtn");
+  const pass = document.querySelector("#adminPassword");
+
+  if (!box || !btn) return;
+
+  if (isAdmin()) box.style.display = "none";
+
+  btn.addEventListener("click", () => {
+    if (pass.value === ADMIN_PASSWORD) {
+      localStorage.setItem("isAdmin", "true");
+      box.style.display = "none";
+    } else {
+      alert("Неверный пароль");
+    }
+  });
+}
+
+/* ================= DATA ================= */
 
 const productsContainer = document.querySelector(".products");
+const searchInput = document.querySelector(".search");
 const categoryCards = document.querySelectorAll(".category-card");
-const subcategoriesBlock = document.querySelector(".subcategories");
+const subBlock = document.querySelector(".subcategories");
 
 let allProducts = [];
 
-const subcategories = {
-  face: [
-    "Тонеры",
-    "Сыворотки",
-    "Кремы",
-    "Маски",
-    "Патчи",
-    "SPF",
-    "Ампула",
-    "Эсенция",
-    "Гидрафилка",
-  ],
-
-  body: [
-    "Лосьоны",
-    "Кремы для тела",
-    "Скрабы",
-    "Масла",
-  ],
-
-  hair: [
-    "Шампуни",
-    "Кондиционеры",
-    "Маски",
-    "Масла",
-  ],
-
-  makeup: [
-    "Тональные основы",
-    "Пудры",
-    "Тушь",
-    "Помады",
-  ],
-};
+/* ================= MAPS ================= */
 
 const categoryMap = {
   face: "Уход за лицом",
@@ -48,254 +50,151 @@ const categoryMap = {
   makeup: "Макияж",
 };
 
-function normalizeString(value) {
-  return String(value ?? "").trim().toLowerCase();
-}
+const subcategories = {
+  face: ["Тонеры", "Сыворотки", "Кремы", "SPF", "Маски", "Патчи", "Пилинги", "Гели", "Мицеллярная вода", "Масла", "Тканевые маски", "Пенка", "Скрабы", "Гидрофильное масло", "Гидрофильный гель",],
+  body: ["Лосьоны", "Скрабы", "Кремы", "Масла", "Гели", "Маски", "Патчи", "Пилинги", "Гидрофильное масло", "Гидрофильный гель", "Гидрофильный бальзам", "Гидрофильная вода", "Гидрофильная пенка",],
+  hair: ["Шампуни", "Маски", "Кондиционеры", "Сыворотки", "Масла", "Гели",],
+  makeup: ["Тональные", "Пудры", "Румяна", "Тени", "Помады", "Блески", "Карандаши", "Подводки", "Туши", "База под макияж", "Консилеры", "Хайлайтеры", "Бронзеры", "Праймеры", "Кисти", "Спонжи", "Палетки", "Наборы", "Средства для бровей", "Средства для ресниц", "Линзы"],
+};
 
-function productMatchesCategory(product, categoryKey) {
-  const categoryLabel = categoryMap[categoryKey] || "";
+/* ================= HELPERS ================= */
 
+const norm = (v) => String(v ?? "").toLowerCase().trim();
+
+function inCategory(p, key) {
   return (
-    normalizeString(product.category) === normalizeString(categoryKey) ||
-    normalizeString(product.category) === normalizeString(categoryLabel)
+    p.category === key ||
+    p.category === categoryMap[key]
   );
 }
 
-function getProductsByCategory(categoryKey) {
-  return allProducts.filter((product) =>
-    productMatchesCategory(product, categoryKey)
-  );
-}
+/* ================= RENDER ================= */
 
-function renderCategorySubcategories(categoryKey) {
-  const categoryProducts = getProductsByCategory(categoryKey);
-
-  const subcategorySet = new Set(subcategories[categoryKey] || []);
-
-  categoryProducts.forEach((product) => {
-    if (product.subCategory) {
-      subcategorySet.add(product.subCategory);
-    }
-  });
-
-  subcategoriesBlock.innerHTML = "";
-
-  [...subcategorySet].forEach((item) => {
-    const button = document.createElement("button");
-
-    button.className = "subcategory-btn";
-    button.textContent = item;
-
-    button.onclick = () => {
-      const filtered = allProducts.filter(
-        (product) =>
-          productMatchesCategory(product, categoryKey) &&
-          normalizeString(product.subCategory) === normalizeString(item)
-      );
-
-      renderProducts(filtered);
-
-      document.querySelector("#products")?.scrollIntoView({
-        behavior: "smooth",
-      });
-    };
-
-    subcategoriesBlock.append(button);
-  });
-}
-
-fetchProducts((products) => {
-  allProducts = products;
-  renderProducts(allProducts);
-});
-
-categoryCards.forEach((card) => {
-  card.addEventListener("click", () => {
-    const category = card.dataset.category;
-
-    if (!subcategories[category]) return;
-
-    renderCategorySubcategories(category);
-    renderProducts(getProductsByCategory(category));
-
-    document.querySelector("#products")?.scrollIntoView({
-      behavior: "smooth",
-    });
-  });
-});
-
-const searchInput = document.querySelector(".search");
-
-if (searchInput) {
-  searchInput.addEventListener("input", (e) => {
-    const value = e.target.value.toLowerCase();
-
-    renderProducts(
-      allProducts.filter((product) =>
-        product.title.toLowerCase().includes(value)
-      )
-    );
-  });
-}
-
-const addBtn = document.querySelector("#addBtn");
-const titleInput = document.querySelector("#title");
-const descInput = document.querySelector("#desc");
-const priceInput = document.querySelector("#price");
-const imageInput = document.querySelector("#image");
-const categoryInput = document.querySelector("#category");
-const subCategoryInput = document.querySelector("#subCategory");
-
-
-
-if (addBtn) {
-  addBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const categoryValue = categoryInput.value;
-    const categoryLabel = categoryMap[categoryValue] || categoryValue;
-
-    const newProduct = {
-      title: titleInput.value.trim(),
-      description: descInput.value.trim(),
-      price: Number(priceInput.value),
-      image: imageInput.value.trim(),
-      category: categoryLabel,
-      subCategory: subCategoryInput.value.trim(),
-      rating: 0,
-      reviews: 0,
-    };
-
-    if (
-      !newProduct.title ||
-      !newProduct.price ||
-      !newProduct.image ||
-      !newProduct.subCategory
-    ) {
-      alert("Заполните все обязательные поля!");
-      return;
-    }
-
-    try {
-      await saveProduct(newProduct);
-
-      alert("Товар успешно добавлен!");
-
-      titleInput.value = "";
-      descInput.value = "";
-      priceInput.value = "";
-      imageInput.value = "";
-      subCategoryInput.value = "";
-
-      modal.classList.remove("active");
-    } catch (error) {
-      console.error(error);
-      alert("Ошибка при добавлении товара.");
-    }
-  });
-}
-
-// ---------------- FOOTER ----------------
-
-const footer = document.querySelector(".footer");
-
-let clickCount = 0;
-let clickTimer = null;
-
-const modal = document.querySelector(".modal");
-const closeModal = document.querySelector(".close-modal");
-
-footer.addEventListener("click", () => {
-  clickCount++;
-
-  clearTimeout(clickTimer);
-
-  clickTimer = setTimeout(() => {
-    clickCount = 0;
-  }, 1500);
-
-  if (clickCount === 5) {
-    modal.classList.add("active");
-    clickCount = 0;
-  }
-});
-
-closeModal.addEventListener("click", () => {
-  modal.classList.remove("active");
-});
-
-window.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    modal.classList.remove("active");
-  }
-});
-
-// ---------------- STARS ----------------
-
-function renderStars(rating = 0) {
-  let html = "";
-
-  for (let i = 1; i <= 5; i++) {
-    html +=
-      i <= rating
-        ? `<span class="star active">★</span>`
-        : `<span class="star">☆</span>`;
-  }
-
-  return html;
-}
-
-// ---------------- RENDER PRODUCTS ----------------
-
-function renderProducts(products) {
+function render(products) {
   productsContainer.innerHTML = "";
 
   if (!products.length) {
-    productsContainer.innerHTML = `
-      <p class="empty">
-        Товары не найдены
-      </p>
-    `;
+    productsContainer.innerHTML = "<p>Нет товаров</p>";
     return;
   }
 
-  products.forEach((product) => {
-    productsContainer.innerHTML += `
-      <div class="product-card">
+  const admin = isAdmin();
 
-        <img src="${product.image}" alt="${product.title}">
+  products.forEach((p) => {
+    const status = p.available ? "В наличии" : "Нет в наличии";
+    const cls = p.available ? "in-stock" : "out-stock";
+
+    productsContainer.innerHTML += `
+      <div class="product-card ${cls}">
+
+        <img src="${p.image}" />
 
         <div class="product-info">
 
-          <span class="product-category">
-            ${product.subCategory}
-          </span>
+          <span class="status">${status}</span>
 
-          <h3>${product.title}</h3>
+          ${admin ? `
+            <button onclick="toggleStatus('${p.id}', ${p.available})">сменить</button>
+            <button onclick="deleteProduct('${p.id}')">🗑</button>
+          ` : ""}
 
-          <p>${product.description}</p>
-
-          <div class="rating">
-
-            <div class="stars">
-              ${renderStars(product.rating)}
-            </div>
-
-            <span>${product.rating ?? 0}</span>
-
-            <span>
-              (${product.reviews ?? 0} отзывов)
-            </span>
-
-          </div>
-
-          <div class="price">
-            ${product.price} сом
-          </div>
+          <h3>${p.title}</h3>
+          <p>${p.description}</p>
+          <div>${p.price} сом</div>
 
         </div>
-
       </div>
     `;
   });
 }
+
+/* ================= CATEGORY ================= */
+
+categoryCards.forEach((card) => {
+  card.addEventListener("click", () => {
+    const key = card.dataset.category;
+
+    renderSub(key);
+    render(allProducts.filter((p) => inCategory(p, key)));
+  });
+});
+
+/* ================= SUBCATEGORIES ================= */
+function renderSub(key) {
+  if (!subBlock) return;
+
+  const set = new Set(subcategories[key] || []);
+
+  allProducts
+    .filter((p) => inCategory(p, key))
+    .forEach((p) => {
+      if (p.subCategory) set.add(p.subCategory);
+    });
+
+  subBlock.innerHTML = "";
+
+  [...set].forEach((s) => {
+    const btn = document.createElement("button");
+    btn.className = "subcategory-btn";
+    btn.textContent = s;
+
+    btn.addEventListener("click", () => {
+      render(
+        allProducts.filter(
+          (p) =>
+            inCategory(p, key) &&
+            norm(p.subCategory) === norm(s)
+        )
+      );
+    });
+
+    subBlock.appendChild(btn);
+  });
+}
+
+/* ================= SEARCH ================= */
+
+searchInput?.addEventListener("input", (e) => {
+  const v = e.target.value.toLowerCase();
+
+  render(allProducts.filter((p) =>
+    p.title.toLowerCase().includes(v)
+  ));
+});
+
+/* ================= ADMIN ACTIONS ================= */
+
+window.deleteProduct = async (id) => {
+  await deleteFromFirebase(id);
+};
+
+window.toggleStatus = async (id, current) => {
+  await updateProduct(id, {
+    available: !current,
+  });
+};
+
+/* ================= ADD PRODUCT ================= */
+
+document.querySelector("#addBtn")?.addEventListener("click", async () => {
+  const product = {
+    title: title.value,
+    description: desc.value,
+    price: Number(price.value),
+    image: image.value,
+    category: categoryMap[category.value],
+    subCategory: subCategory.value,
+    available: true,
+  };
+
+  await saveProduct(product);
+});
+
+/* ================= INIT ================= */
+
+fetchProducts((data) => {
+  allProducts = data;
+  render(allProducts);
+});
+
+initAdmin();

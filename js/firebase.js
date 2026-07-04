@@ -4,6 +4,9 @@ import {
   collection,
   addDoc,
   onSnapshot,
+  deleteDoc,
+  doc,
+  updateDoc,
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -13,37 +16,32 @@ const firebaseConfig = {
   storageBucket: "hold-live-new.firebasestorage.app",
   messagingSenderId: "223551988266",
   appId: "1:223551988266:web:ea25ec6c3db19109e9d953",
-  measurementId: "G-EHTLK9SG0G",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const productsCollection = collection(db, "products");
+const col = collection(db, "products");
 
-// Получение товаров в реальном времени
-export function fetchProducts(callback) {
-  return onSnapshot(productsCollection, (snapshot) => {
-    const products = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    callback(products);
+export function fetchProducts(cb) {
+  return onSnapshot(col, (snap) => {
+    cb(
+      snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }))
+    );
   });
 }
 
-// Добавление товара
 export async function saveProduct(product) {
-  try {
-    console.log("TRY SAVE:", product);
+  return await addDoc(col, product);
+}
 
-    const docRef = await addDoc(productsCollection, product);
+export async function deleteFromFirebase(id) {
+  return await deleteDoc(doc(db, "products", id));
+}
 
-    console.log("SAVED:", docRef.id);
-    return docRef;
-  } catch (error) {
-    console.error("FIREBASE ERROR:", error);
-    throw error;
-  }
+export async function updateProduct(id, data) {
+  return await updateDoc(doc(db, "products", id), data);
 }

@@ -6,8 +6,6 @@ const subcategoriesBlock = document.querySelector(".subcategories");
 
 let allProducts = [];
 
-// ---------------- ПОДКАТЕГОРИИ ----------------
-
 const subcategories = {
   face: [
     "Тонеры",
@@ -21,11 +19,26 @@ const subcategories = {
     "Гидрафилка",
   ],
 
-  body: ["Лосьоны", "Кремы для тела", "Скрабы", "Масла"],
+  body: [
+    "Лосьоны",
+    "Кремы для тела",
+    "Скрабы",
+    "Масла",
+  ],
 
-  hair: ["Шампуни", "Кондиционеры", "Маски", "Масла"],
+  hair: [
+    "Шампуни",
+    "Кондиционеры",
+    "Маски",
+    "Масла",
+  ],
 
-  makeup: ["Тональные основы", "Пудры", "Тушь", "Помады"],
+  makeup: [
+    "Тональные основы",
+    "Пудры",
+    "Тушь",
+    "Помады",
+  ],
 };
 
 const categoryMap = {
@@ -36,140 +49,65 @@ const categoryMap = {
 };
 
 function normalizeString(value) {
-  return String(value ?? "")
-    .trim()
-    .toLowerCase();
+  return String(value ?? "").trim().toLowerCase();
 }
 
 function productMatchesCategory(product, categoryKey) {
   const categoryLabel = categoryMap[categoryKey] || "";
-  const productCategory = normalizeString(product.category);
-  const keyNormalized = normalizeString(categoryKey);
-  const labelNormalized = normalizeString(categoryLabel);
 
   return (
-    productCategory === keyNormalized || productCategory === labelNormalized
+    normalizeString(product.category) === normalizeString(categoryKey) ||
+    normalizeString(product.category) === normalizeString(categoryLabel)
   );
 }
 
 function getProductsByCategory(categoryKey) {
   return allProducts.filter((product) =>
-    productMatchesCategory(product, categoryKey),
+    productMatchesCategory(product, categoryKey)
   );
 }
 
 function renderCategorySubcategories(categoryKey) {
   const categoryProducts = getProductsByCategory(categoryKey);
+
   const subcategorySet = new Set(subcategories[categoryKey] || []);
 
   categoryProducts.forEach((product) => {
     if (product.subCategory) {
-      subcategorySet.add(product.subCategory.trim());
+      subcategorySet.add(product.subCategory);
     }
   });
 
   subcategoriesBlock.innerHTML = "";
 
-  Array.from(subcategorySet).forEach((item) => {
+  [...subcategorySet].forEach((item) => {
     const button = document.createElement("button");
 
     button.className = "subcategory-btn";
     button.textContent = item;
 
-    button.addEventListener("click", () => {
-      const filtered = allProducts.filter((product) => {
-        return (
+    button.onclick = () => {
+      const filtered = allProducts.filter(
+        (product) =>
           productMatchesCategory(product, categoryKey) &&
           normalizeString(product.subCategory) === normalizeString(item)
-        );
-      });
+      );
 
       renderProducts(filtered);
 
       document.querySelector("#products")?.scrollIntoView({
         behavior: "smooth",
       });
-    });
+    };
 
-    subcategoriesBlock.appendChild(button);
+    subcategoriesBlock.append(button);
   });
 }
 
-const STORAGE_KEY = "hold_live_products";
-
-function loadProductsFromStorage() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : null;
-  } catch (error) {
-    console.warn("Не удалось прочитать localStorage", error);
-    return null;
-  }
-}
-
-function saveProductsToStorage(products) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  } catch (error) {
-    console.warn("Не удалось сохранить в localStorage", error);
-  }
-}
-
-// ---------------- ЗАГРУЗКА ТОВАРОВ ----------------
-
-async function getProducts() {
-  const savedProducts = loadProductsFromStorage();
-
-  if (Array.isArray(savedProducts) && savedProducts.length > 0) {
-    allProducts = savedProducts;
-    renderProducts(allProducts);
-  }
-
-  try {
-    const firebaseProducts = await fetchProducts();
-
-    if (Array.isArray(firebaseProducts) && firebaseProducts.length > 0) {
-      allProducts = firebaseProducts;
-      renderProducts(allProducts);
-      saveProductsToStorage(allProducts);
-      return;
-    }
-
-    if (!savedProducts || savedProducts.length === 0) {
-      const response = await fetch("./data/products.json");
-
-      if (!response.ok) {
-        throw new Error("Ошибка загрузки JSON");
-      }
-
-      const products = await response.json();
-      allProducts = products;
-      renderProducts(allProducts);
-      saveProductsToStorage(allProducts);
-    }
-  } catch (error) {
-    console.log("Firebase load failed:", error);
-
-    if (!savedProducts || savedProducts.length === 0) {
-      try {
-        const response = await fetch("./data/products.json");
-
-        if (!response.ok) {
-          throw new Error("Ошибка загрузки JSON");
-        }
-
-        const products = await response.json();
-        allProducts = products;
-        renderProducts(allProducts);
-        saveProductsToStorage(allProducts);
-      } catch (fetchError) {
-        console.log(fetchError);
-      }
-    }
-  }
-}
-
-// ---------------- КАТЕГОРИИ (НЕ ТРОГАЮ) ----------------
+fetchProducts((products) => {
+  allProducts = products;
+  renderProducts(allProducts);
+});
 
 categoryCards.forEach((card) => {
   card.addEventListener("click", () => {
@@ -186,21 +124,17 @@ categoryCards.forEach((card) => {
   });
 });
 
-// ---------------- INIT ----------------
-
-getProducts();
-
 const searchInput = document.querySelector(".search");
 
 if (searchInput) {
   searchInput.addEventListener("input", (e) => {
     const value = e.target.value.toLowerCase();
 
-    const filtered = allProducts.filter((product) =>
-      product.title.toLowerCase().includes(value),
+    renderProducts(
+      allProducts.filter((product) =>
+        product.title.toLowerCase().includes(value)
+      )
     );
-
-    renderProducts(filtered);
   });
 }
 
@@ -212,21 +146,22 @@ const imageInput = document.querySelector("#image");
 const categoryInput = document.querySelector("#category");
 const subCategoryInput = document.querySelector("#subCategory");
 
+
+
 if (addBtn) {
   addBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     const categoryValue = categoryInput.value;
     const categoryLabel = categoryMap[categoryValue] || categoryValue;
-    const subCategoryValue = subCategoryInput.value.trim();
 
     const newProduct = {
       title: titleInput.value.trim(),
       description: descInput.value.trim(),
-      price: priceInput.value.trim(),
+      price: Number(priceInput.value),
       image: imageInput.value.trim(),
       category: categoryLabel,
-      subCategory: subCategoryValue,
+      subCategory: subCategoryInput.value.trim(),
       rating: 0,
       reviews: 0,
     };
@@ -237,35 +172,36 @@ if (addBtn) {
       !newProduct.image ||
       !newProduct.subCategory
     ) {
-      alert("Заполни все поля");
+      alert("Заполните все обязательные поля!");
       return;
     }
 
-    allProducts.push(newProduct);
-    saveProductsToStorage(allProducts);
-
     try {
       await saveProduct(newProduct);
+
+      alert("Товар успешно добавлен!");
+
+      titleInput.value = "";
+      descInput.value = "";
+      priceInput.value = "";
+      imageInput.value = "";
+      subCategoryInput.value = "";
+
+      modal.classList.remove("active");
     } catch (error) {
-      console.warn("Не удалось сохранить товар в Firebase", error);
+      console.error(error);
+      alert("Ошибка при добавлении товара.");
     }
-
-    renderProducts(allProducts);
-
-    titleInput.value = "";
-    descInput.value = "";
-    priceInput.value = "";
-    imageInput.value = "";
-    subCategoryInput.value = "";
   });
 }
+
+// ---------------- FOOTER ----------------
 
 const footer = document.querySelector(".footer");
 
 let clickCount = 0;
 let clickTimer = null;
 
-// модалка
 const modal = document.querySelector(".modal");
 const closeModal = document.querySelector(".close-modal");
 
@@ -288,54 +224,77 @@ closeModal.addEventListener("click", () => {
   modal.classList.remove("active");
 });
 
-function renderStars(rating) {
-  const maxStars = 5;
-  let starsHtml = "";
+window.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("active");
+  }
+});
 
-  for (let i = 0; i < maxStars; i++) {
-    starsHtml +=
-      i < rating
-        ? '<span class="star active">★</span>'
-        : '<span class="star">☆</span>';
+// ---------------- STARS ----------------
+
+function renderStars(rating = 0) {
+  let html = "";
+
+  for (let i = 1; i <= 5; i++) {
+    html +=
+      i <= rating
+        ? `<span class="star active">★</span>`
+        : `<span class="star">☆</span>`;
   }
 
-  return starsHtml;
+  return html;
 }
+
+// ---------------- RENDER PRODUCTS ----------------
 
 function renderProducts(products) {
   productsContainer.innerHTML = "";
 
-  if (!products || products.length === 0) {
-    productsContainer.innerHTML = "<p>Товары не найдены</p>";
+  if (!products.length) {
+    productsContainer.innerHTML = `
+      <p class="empty">
+        Товары не найдены
+      </p>
+    `;
     return;
   }
 
   products.forEach((product) => {
-    const rating = product.rating ?? 0;
-    const reviews = product.reviews ?? 0;
-
     productsContainer.innerHTML += `
       <div class="product-card">
+
         <img src="${product.image}" alt="${product.title}">
 
         <div class="product-info">
-          <span class="product-category">${product.subCategory}</span>
+
+          <span class="product-category">
+            ${product.subCategory}
+          </span>
 
           <h3>${product.title}</h3>
 
           <p>${product.description}</p>
 
           <div class="rating">
+
             <div class="stars">
-              ${renderStars(rating)}
+              ${renderStars(product.rating)}
             </div>
 
-            <span>${rating}</span>
-            <span>(${reviews} отзывов)</span>
+            <span>${product.rating ?? 0}</span>
+
+            <span>
+              (${product.reviews ?? 0} отзывов)
+            </span>
+
           </div>
 
-          <div class="price">${product.price} сом</div>
+          <div class="price">
+            ${product.price} сом
+          </div>
+
         </div>
+
       </div>
     `;
   });

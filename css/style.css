@@ -523,6 +523,10 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.5);
 
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+
+  /* Добавляем flex для выравнивания высоты и содержимого */
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -582,6 +586,10 @@ button {
 
 .product-info {
   padding: 25px;
+  /* Позволяем этому блоку расти, чтобы заполнить доступное пространство */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-info h3 {
@@ -596,6 +604,9 @@ button {
   line-height: 1.7;
 
   margin-bottom: 15px;
+
+  /* Этот блок будет занимать всё доступное место, отодвигая цены вниз */
+  flex-grow: 1;
 }
 
 .prices {

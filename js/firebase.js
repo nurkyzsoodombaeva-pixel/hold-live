@@ -20,17 +20,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const col = collection(db, "products");
 
 export function fetchProducts(cb) {
   return onSnapshot(col, (snap) => {
-    cb(
-      snap.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      }))
-    );
+    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   });
 }
 
@@ -44,4 +38,8 @@ export async function deleteFromFirebase(id) {
 
 export async function updateProduct(id, data) {
   return await updateDoc(doc(db, "products", id), data);
+}
+
+function isAdmin() {
+  return localStorage.getItem("isAdmin") === "true";
 }
